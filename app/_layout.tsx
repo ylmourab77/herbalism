@@ -49,6 +49,17 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen 
+  name="(modals)/login" 
+  options={{ 
+    title : "Log in or sign up",
+    headerTitleAlign: 'center' 
+  }} 
+/>
+<Stack.Screen name='listing/[id]' options={{ title : "Listing", headerTitleAlign: 'center' }} />
+<Stack.Screen name="(modals)/booking" options={{ title : "Booking", headerTitleAlign: 'center', presentation : 'transparentModal', animation:'fade' }} />
+       
+
        
       </Stack>
     </ThemeProvider>
