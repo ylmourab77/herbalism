@@ -1,3 +1,6 @@
+import React from 'react';
+
+
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -9,24 +12,27 @@ import { useRouter } from 'expo-router';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 
 
-const CLERK_PUBLISHABLE_KEY ='pk_test_bWVldC1tYXN0b2Rvbi05OC5jbGVyay5hY2NvdW50cy5kZXYk'
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 const tokenCache = {
   async getToken(key:string){
-    try{
+    try {
       return SecureStore.getItemAsync(key);
-    }catch(err){
-      return null
+    }catch  (error){
+      console.log('Failed to get the token', error)
     }
   },
-  async saveToken(key:string,value:string){
+  async saveToken(key: string, value: string){
     try{
-      return SecureStore.setItemAsync(key,value);
-    }catch(err){
-      console.log(err);
-    }
-  }
+      return SecureStore.setItemAsync(key, value);
 
+
+    } catch (error){
+      console.log('Failed to save the token', error)
+    }
+  },
 }
+
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,30 +58,42 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    if (error) console.error(error);
+  }, [error]);
+  
 
-  if (!loaded) {
-    return null;
-  }
+  
 
-  return (<ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}> <RootLayoutNav />;   </ClerkProvider> )
+  // ...
+
+  return (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+      <RootLayoutNav />
+    </ClerkProvider>
+       
+   
+  );
+      
+    
+  ;
 }
 
 function RootLayoutNav() {
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const {isLoaded, isSignedIn} = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
-    if(!isLoaded && !isSignedIn) {
+    if (isLoaded && !isSignedIn) {
       router.push('/(modals)/login');
     }
-    
   }, [isLoaded]);
+
+  
+
+ 
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
